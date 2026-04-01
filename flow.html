@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FLOW · Blog Value Tool · Marketing Intelligence Suite · Project Vantage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { font-family: 'Barlow','Segoe UI',sans-serif; background:#0d1b2e; color:#f0f5ff; min-height:100vh; }
+    input, select, button, textarea { font-family: inherit; }
+    input[type=date], input[type=number], input[type=text] { color-scheme: dark; }
+    table { border-collapse: collapse; width: 100%; }
+    button { cursor: pointer; }
+
+    /* HEADER */
+    #header { display:flex; align-items:center; justify-content:space-between; padding:18px 32px; border-bottom:1px solid #1e3558; background:#132240; }
+    #header-left { display:flex; align-items:center; gap:16px; }
+    #logo-svg { width:48px; height:48px; }
+    #logo-title { font-family:'Barlow Condensed','Barlow',sans-serif; font-weight:800; font-size:26px; color:#f0f5ff; letter-spacing:-0.01em; }
+    #logo-sub { font-family:monospace; font-size:12px; color:#7a94b8; letter-spacing:0.08em; margin-top:3px; }
+    #client-select { background:#0d1b2e; border:1px solid #1e3558; border-radius:10px; padding:9px 14px; font-size:17px; color:#f0f5ff; outline:none; cursor:pointer; }
+
+    /* TABS */
+    #tabs { display:flex; border-bottom:1px solid #1e3558; background:#132240; padding:0 24px; overflow-x:auto; }
+    .tab-btn { font-family:'Barlow',sans-serif; font-weight:700; font-size:16px; color:#7a94b8; background:none; border:none; border-bottom:2px solid transparent; padding:14px 16px 12px; transition:all 0.2s; letter-spacing:0.01em; white-space:nowrap; }
+    .tab-btn.active { color:#a78bfa; border-bottom-color:#a78bfa; }
+
+    /* BODY */
+    #app-body { max-width:1100px; margin:0 auto; padding:32px 24px 60px; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* CARDS */
+    .card { background:#132240; border:1px solid #1e3558; border-radius:16px; padding:24px 28px; margin-bottom:20px; }
+    .card-title { font-family:'Barlow Condensed','Barlow',sans-serif; font-weight:700; font-size:20px; color:#f0f5ff; letter-spacing:0.01em; margin-bottom:18px; }
+
+    /* FORM */
+    .label { font-family:monospace; font-size:12px; letter-spacing:0.13em; text-transform:uppercase; color:#7a94b8; display:block; margin-bottom:7px; }
+    .input { width:100%; background:rgba(255,255,255,0.07); border:1px solid #1e3558; border-radius:10px; padding:11px 13px; font-family:monospace; font-size:16px; color:#f0f5ff; outline:none; color-scheme:dark; }
+    .input::placeholder { color:#7a94b8; }
+    select.input { font-family:'Barlow',sans-serif; cursor:pointer; }
+    select.input option { background:#132240; color:#f0f5ff; }
+    .btn-primary { background:#5b21b6; border:1px solid #a78bfa; border-radius:10px; padding:11px 20px; font-weight:700; font-size:16px; color:#f0f5ff; transition:all 0.2s; }
+    .btn-primary:hover { background:#6d28d9; }
+    .btn-ghost { background:none; border:1px solid #1e3558; border-radius:10px; padding:9px 16px; font-weight:600; font-size:15px; color:#7a94b8; transition:all 0.2s; }
+    .btn-ghost:hover { border-color:#a78bfa; color:#a78bfa; }
+    .btn-danger { background:none; border:1px solid rgba(248,113,113,0.3); border-radius:8px; padding:7px 13px; font-weight:600; font-size:14px; color:#f87171; }
+    .btn-danger:hover { background:rgba(248,113,113,0.1); }
+    .btn-green { background:#065f46; border:1px solid #34d399; border-radius:10px; padding:11px 20px; font-weight:700; font-size:16px; color:#34d399; }
+
+    /* GRID */
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+    .grid4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:14px; }
+    @media(max-width:700px) { .grid2,.grid3,.grid4 { grid-template-columns:1fr; } }
+
+    /* TABLE */
+    th { font-family:monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:#7a94b8; padding:10px 12px; text-align:left; border-bottom:1px solid #1e3558; }
+    td { font-family:monospace; font-size:14px; color:#f0f5ff; padding:11px 12px; border-bottom:1px solid rgba(30,53,88,0.5); }
+    .table-wrap { overflow-x:auto; }
+
+    /* HERO */
+    #flow-hero { background:linear-gradient(135deg,#1e1035 0%,#132240 100%); border:1px solid #1e3558; border-radius:20px; padding:36px; margin-bottom:20px; position:relative; overflow:hidden; }
+    #flow-glow { position:absolute; top:-80px; right:-80px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(167,139,250,0.12) 0%,transparent 70%); pointer-events:none; }
+    #flow-label { font-family:monospace; font-size:12px; letter-spacing:0.13em; text-transform:uppercase; color:#7a94b8; margin-bottom:8px; }
+    #flow-value { font-family:'Barlow Condensed','Barlow',sans-serif; font-weight:800; font-size:96px; line-height:1; letter-spacing:-0.04em; color:#a78bfa; }
+    #flow-sub { font-size:16px; color:#7a94b8; margin-top:6px; margin-bottom:28px; }
+    #flow-badge { display:inline-block; padding:5px 16px; border-radius:20px; font-weight:700; font-size:14px; margin-left:12px; vertical-align:middle; }
+    .badge-strong { background:rgba(167,139,250,0.15); color:#a78bfa; border:1px solid rgba(167,139,250,0.3); }
+    .badge-moderate { background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3); }
+    .badge-weak { background:rgba(248,113,113,0.15); color:#f87171; border:1px solid rgba(248,113,113,0.3); }
+
+    /* SIGNAL GRID */
+    #signal-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:8px; }
+    @media(max-width:800px){ #signal-grid { grid-template-columns:1fr 1fr; } }
+    .signal-card { background:rgba(255,255,255,0.04); border:1px solid #1e3558; border-radius:12px; padding:14px 16px; }
+    .signal-name { font-size:13px; font-weight:700; color:#f0f5ff; margin-bottom:6px; display:flex; align-items:center; gap:7px; }
+    .signal-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .signal-index { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:26px; margin-bottom:6px; }
+    .sig-up { color:#a78bfa; } .sig-mid { color:#fbbf24; } .sig-down { color:#f87171; }
+    .sig-bar-bg { background:rgba(255,255,255,0.06); border-radius:4px; height:5px; overflow:hidden; margin-bottom:6px; }
+    .sig-bar { height:100%; border-radius:4px; transition:width 0.5s; }
+    .sig-defense { font-size:11px; color:#7a94b8; line-height:1.5; }
+
+    /* STAT STRIP */
+    .stat-strip { background:rgba(13,27,46,0.6); border:1px solid #1e3558; border-radius:16px; padding:20px 28px; margin-bottom:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+    .stat-label { font-family:monospace; font-size:11px; letter-spacing:0.13em; text-transform:uppercase; color:#7a94b8; margin-bottom:4px; }
+    .stat-value { font-size:20px; font-weight:700; color:#f0f5ff; }
+
+    /* NARRATIVE TAB */
+    .narrative-box { background:linear-gradient(135deg,#1e1035 0%,#132240 100%); border:1px solid rgba(167,139,250,0.3); border-radius:16px; padding:32px 36px; }
+    .narrative-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:22px; color:#a78bfa; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:20px; }
+    .narrative-text { font-size:18px; line-height:2; color:#f0f5ff; }
+    .narrative-text span { color:#a78bfa; font-weight:700; }
+    .narrative-disclaimer { font-size:13px; color:#7a94b8; margin-top:20px; line-height:1.6; }
+
+    /* TREND */
+    #trend-canvas-wrap { position:relative; height:260px; margin-top:8px; }
+    canvas#trend-canvas { width:100%; height:100%; }
+    .trend-empty { text-align:center; padding:60px; color:#7a94b8; font-size:15px; }
+
+    /* POSTS TABLE */
+    .post-rank { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:20px; color:#a78bfa; }
+    .post-bar-bg { background:rgba(255,255,255,0.06); border-radius:3px; height:4px; overflow:hidden; margin-top:4px; }
+    .post-bar { height:100%; background:#a78bfa; border-radius:3px; }
+
+    /* GUIDE */
+    .guide-card { background:#132240; border:1px solid #1e3558; border-radius:16px; margin-bottom:12px; overflow:hidden; }
+    .guide-header { display:flex; align-items:center; justify-content:space-between; padding:16px 22px; cursor:pointer; transition:background 0.2s; }
+    .guide-header:hover { background:rgba(167,139,250,0.05); }
+    .guide-title-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .guide-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .guide-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:19px; color:#f0f5ff; }
+    .guide-tag { font-family:monospace; font-size:11px; color:#7a94b8; background:rgba(255,255,255,0.05); border:1px solid #1e3558; border-radius:4px; padding:2px 9px; }
+    .guide-chevron { color:#7a94b8; font-size:13px; transition:transform 0.2s; }
+    .guide-chevron.open { transform:rotate(180deg); }
+    .guide-body { display:none; padding:0 22px 20px; border-top:1px solid #1e3558; }
+    .guide-body.open { display:block; }
+    .guide-summary { font-size:14px; color:#f0f5ff; line-height:1.7; margin:14px 0; }
+    .guide-step-title { font-family:monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#a78bfa; margin-bottom:7px; margin-top:4px; }
+    .guide-ol { padding-left:18px; color:#7a94b8; font-size:13px; line-height:1.9; }
+    .guide-ol li { margin-bottom:2px; }
+    .guide-ol strong { color:#f0f5ff; }
+    .gotcha { background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.25); border-radius:8px; padding:10px 14px; margin-bottom:10px; font-size:13px; color:#7a94b8; line-height:1.6; }
+    .gotcha-title { font-weight:700; color:#fbbf24; margin-bottom:3px; font-size:12px; }
+    .pro-tip { background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.2); border-radius:8px; padding:10px 14px; font-size:13px; color:#7a94b8; line-height:1.6; }
+    .pro-tip-title { font-weight:700; color:#a78bfa; margin-bottom:3px; font-size:12px; }
+
+
+    /* COMPARISON */
+    .cmp-col-head { border-radius:10px; padding:12px 16px; text-align:center; }
+    .cmp-col-title { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:14px; letter-spacing:0.1em; }
+    .cmp-col-sub { font-family:monospace; font-size:11px; color:#7a94b8; margin-top:3px; }
+    .cmp-row { display:grid; grid-template-columns:220px 1fr 1fr; gap:12px; margin-bottom:8px; align-items:center; }
+    .cmp-metric-label { font-size:13px; font-weight:600; color:#7a94b8; padding:12px 8px; }
+    .cmp-cell { background:#132240; border:1px solid #1e3558; border-radius:10px; padding:12px 16px; text-align:center; }
+    .cmp-cell.baseline { border-color:#1e3558; }
+    .cmp-cell.mid { border-color:rgba(167,139,250,0.2); }
+    .cmp-cell.current { border-color:rgba(52,211,153,0.2); }
+    .cmp-val { font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:26px; color:#f0f5ff; }
+    .cmp-delta { font-size:12px; margin-top:3px; font-weight:700; }
+    .delta-up { color:#34d399; } .delta-down { color:#f87171; } .delta-flat { color:#7a94b8; }
+    .cmp-section-header { grid-column:1/-1; font-family:monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#a78bfa; padding:16px 8px 6px; border-bottom:1px solid rgba(167,139,250,0.2); margin-bottom:4px; }
+    /* MISC */
+    .alert { padding:11px 16px; border-radius:8px; margin-bottom:16px; font-size:15px; }
+    .alert.ok { background:rgba(52,211,153,0.12); border:1px solid #34d399; color:#34d399; }
+    .alert.err { background:rgba(248,113,113,0.12); border:1px solid #f87171; color:#f87171; }
+    .empty { text-align:center; padding:48px; color:#7a94b8; font-size:17px; }
+    .flex-gap { display:flex; gap:10px; flex-wrap:wrap; }
+    .mb14 { margin-bottom:14px; }
+    .mb20 { margin-bottom:20px; }
+    .section-label { font-family:monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#a78bfa; margin-bottom:10px; padding-bottom:5px; border-bottom:1px solid rgba(167,139,250,0.2); }
+    #loading { display:flex; align-items:center; justify-content:center; min-height:100vh; font-family:monospace; font-size:15px; letter-spacing:0.1em; color:#7a94b8; }
+    #app { display:none; }
+    .client-row { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-radius:10px; margin-bottom:8px; border:1px solid #1e3558; background:rgba(255,255,255,0.04); }
+    .client-row.active { background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.3); }
+    .client-dot { width:8px; height:8px; border-radius:50%; background:#7a94b8; }
+    .client-dot.active { background:#a78bfa; }
+    .insight-box { background:rgba(167,139,250,0.06); border:1px solid rgba(167,139,250,0.2); border-radius:10px; padding:14px 16px; margin-top:16px; font-size:14px; color:#7a94b8; line-height:1.6; }
+    .insight-box strong { color:#a78bfa; }
+  </style>
+</head>
+<body>
+<style>
+  #pw-gate {
+    position:fixed; inset:0; background:#0d1b2e; z-index:99999;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+  }
+  #pw-box {
+    background:#132240; border:1px solid #1e3558; border-radius:20px;
+    padding:48px 40px; width:100%; max-width:420px; text-align:center;
+  }
+  #pw-logo { font-family:'Barlow Condensed','Barlow',Arial,sans-serif; font-weight:800; font-size:28px; color:#f0f5ff; margin-bottom:6px; }
+  #pw-sub { font-family:monospace; font-size:12px; color:#7a94b8; letter-spacing:0.1em; margin-bottom:32px; }
+  #pw-input {
+    width:100%; background:rgba(255,255,255,0.07); border:1px solid #1e3558;
+    border-radius:10px; padding:13px 16px; font-size:17px; color:#f0f5ff;
+    font-family:monospace; outline:none; color-scheme:dark; margin-bottom:14px;
+    text-align:center; letter-spacing:0.15em;
+  }
+  #pw-input::placeholder { color:#7a94b8; letter-spacing:0.05em; }
+  #pw-btn {
+    width:100%; background:#5b21b6; border:1px solid #5b21b6;
+    border-radius:10px; padding:13px; font-weight:700; font-size:16px;
+    color:#f0f5ff; cursor:pointer; transition:opacity 0.2s;
+  }
+  #pw-btn:hover { opacity:0.85; }
+  #pw-err { color:#f87171; font-size:14px; margin-top:12px; min-height:20px; font-family:monospace; }
+  #pw-foot { font-size:12px; color:#7a94b8; margin-top:24px; }
+</style>
+<div id="pw-gate">
+  <div id="pw-box">
+    <div id="pw-logo">Project Vantage</div>
+    <div id="pw-sub">BLOG VALUE TOOL · FLOW</div>
+    <input type="password" id="pw-input" placeholder="Enter access password" 
+      onkeydown="if(event.key==='Enter')checkPW()"/>
+    <button id="pw-btn" onclick="checkPW()">Access Tool</button>
+    <div id="pw-err"></div>
+    <div id="pw-foot">Authorized users only &middot; &copy; Project Vantage</div>
+  </div>
+</div>
+<script>
+(function(){
+  const PW = 'vantageblog';
+  const KEY = 'vantage_access_vantageb';
+  if(localStorage.getItem(KEY)==='1') document.getElementById('pw-gate').style.display='none';
+  window.checkPW = function(){
+    const val = document.getElementById('pw-input').value.trim();
+    if(val === PW){
+      localStorage.setItem(KEY,'1');
+      document.getElementById('pw-gate').style.display='none';
+    } else {
+      document.getElementById('pw-err').textContent='Incorrect password. Try again.';
+      document.getElementById('pw-input').value='';
+      document.getElementById('pw-input').focus();
+    }
+  };
+})();
+</script>
+
+<div id="loading">LOADING VANTAGE AI...</div>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div id="header-left">
+      <!-- Inline SVG logo placeholder -->
+      <svg id="logo-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="10" fill="#1e1035"/>
+        <!-- Flow arrows / content funnel -->
+        <path d="M10 14 Q24 10 38 14" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M13 20 Q24 16 35 20" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M16 26 Q24 22 32 26" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- Funnel bottom / conversion arrow -->
+        <path d="M20 32 L24 38 L28 32" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="24" cy="38" r="2.5" fill="#34d399"/>
+        <!-- FLOW text -->
+        <text x="24" y="47" text-anchor="middle" font-family="Arial" font-weight="800" font-size="7" fill="#7a94b8" letter-spacing="2">FLOW</text>
+      </svg>
+      <div>
+        <div id="logo-title">Blog Value Tool <span style="color:#a78bfa">FLOW</span></div>
+        <div id="logo-sub">Marketing Intelligence Suite &middot; Project Vantage</div>
+      </div>
+    </div>
+    <select id="client-select" onchange="switchClient(this.value)"></select>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab-btn active" onclick="showTab('dashboard',this)">Dashboard</button>
+    <button class="tab-btn" onclick="showTab('data',this)">Data Entry</button>
+    <button class="tab-btn" onclick="showTab('posts',this)">Blog Posts</button>
+    <button class="tab-btn" onclick="showTab('trend',this)">Trend</button>
+    <button class="tab-btn" onclick="showTab('compare',this)">Comparison</button>
+    <button class="tab-btn" onclick="showTab('narrative',this)">Narrative</button>
+    <button class="tab-btn" onclick="showTab('guide',this)">GA4 Guide</button>
+    <button class="tab-btn" id="config-tab-btn" style="display:none" onclick="showTab('config',this)">Config</button>
+    <button class="tab-btn" onclick="showTab('clients',this)">Clients</button>
+  </div>
+
+  <div id="app-body">
+
+    <!-- ── DASHBOARD ── -->
+    <div id="tab-dashboard" class="tab-panel active">
+      <div id="flow-hero">
+        <div id="flow-glow"></div>
+        <div id="flow-label">Blog Influence Score</div>
+        <div>
+          <span id="flow-value">—</span>
+          <span id="flow-badge"></span>
+        </div>
+        <div id="flow-sub">0 = no influence &nbsp;·&nbsp; 100 = maximum blog impact</div>
+        <div id="signal-grid">
+          <div class="signal-card" style="color:#7a94b8;font-size:14px;grid-column:1/-1;padding:20px">Enter site data to compute Blog Influence Score.</div>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div><div class="stat-label">Est. Influenced Conversions</div><div class="stat-value" id="st-conv">—</div></div>
+        <div><div class="stat-label">Blog Entry Share</div><div class="stat-value" id="st-entry">—</div></div>
+        <div><div class="stat-label">Conversion Lift</div><div class="stat-value" id="st-lift">—</div></div>
+        <div><div class="stat-label">Path Participation</div><div class="stat-value" id="st-bppr">—</div></div>
+        <div><div class="stat-label">Content Gravity</div><div class="stat-value" id="st-gravity">—</div></div>
+        <div><div class="stat-label">Snapshot Date</div><div class="stat-value" id="st-date">—</div></div>
+      </div>
+
+      <div class="insight-box" id="insight-box" style="display:none"></div>
+    </div>
+
+    <!-- ── DATA ENTRY ── -->
+    <div id="tab-data" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Weekly Snapshot Data</div>
+        <div id="data-alert" style="display:none"></div>
+
+        <div class="section-label mb14">Snapshot Info</div>
+        <div class="grid2 mb20">
+          <div><label class="label">Week Ending Date</label><input type="date" class="input" id="f-date"/></div>
+          <div><label class="label">Period Label (optional)</label><input type="text" class="input" id="f-label" placeholder="e.g. Q1 Week 4"/></div>
+        </div>
+
+        <div class="section-label mb14">Site-Level Metrics</div>
+        <div class="grid3 mb20">
+          <div><label class="label">Total Sessions</label><input type="number" class="input" id="f-total-sessions" placeholder="e.g. 12000"/></div>
+          <div><label class="label">Total Users</label><input type="number" class="input" id="f-total-users" placeholder="e.g. 9800"/></div>
+          <div><label class="label">Total Conversions</label><input type="number" class="input" id="f-total-conv" placeholder="e.g. 400"/></div>
+          <div><label class="label">Site Engagement Rate (0–1)</label><input type="number" class="input" id="f-site-eng" placeholder="e.g. 0.54" step="0.01"/></div>
+          <div><label class="label">Site Pages / Session</label><input type="number" class="input" id="f-site-pps" placeholder="e.g. 1.8" step="0.1"/></div>
+          <div><label class="label">Site Intent Nav Rate (0–1)</label><input type="number" class="input" id="f-site-intent" placeholder="e.g. 0.08" step="0.01"/></div>
+        </div>
+
+        <div class="section-label mb14">Blog Segment Metrics (pages containing /blog/)</div>
+        <div class="grid3 mb20">
+          <div><label class="label">Blog Sessions</label><input type="number" class="input" id="f-blog-sessions" placeholder="e.g. 5000"/></div>
+          <div><label class="label">Blog Users</label><input type="number" class="input" id="f-blog-users" placeholder="e.g. 4200"/></div>
+          <div><label class="label">Blog Entrances</label><input type="number" class="input" id="f-blog-entrances" placeholder="e.g. 3000"/></div>
+          <div><label class="label">Blog Engaged Sessions</label><input type="number" class="input" id="f-blog-engaged" placeholder="e.g. 3200"/></div>
+          <div><label class="label">Blog Pages / Session</label><input type="number" class="input" id="f-blog-pps" placeholder="e.g. 2.4" step="0.1"/></div>
+          <div><label class="label">Blog Conversions (direct)</label><input type="number" class="input" id="f-blog-conv" placeholder="e.g. 45"/></div>
+          <div><label class="label">Blog Assisted Conversions</label><input type="number" class="input" id="f-blog-assisted" placeholder="e.g. 110"/></div>
+          <div><label class="label">Blog → Intent Page Sessions</label><input type="number" class="input" id="f-blog-intent" placeholder="e.g. 850"/></div>
+        </div>
+
+        <div class="section-label mb14">Path Data</div>
+        <div class="grid2 mb20">
+          <div><label class="label">Conversions with Blog Touchpoint</label><input type="number" class="input" id="f-blog-touch" placeholder="e.g. 110"/></div>
+        </div>
+
+        <div class="flex-gap">
+          <button class="btn-primary" id="save-snap-btn" onclick="saveSnapshot()">Save Snapshot</button>
+          <button class="btn-ghost" id="cancel-snap-btn" style="display:none" onclick="cancelSnapEdit()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Snapshots table -->
+      <div class="card" id="snap-table-card" style="display:none">
+        <div class="card-title" id="snap-table-title">Saved Snapshots</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Label</th><th>BIS Score</th><th>Influenced Conv.</th><th>Entry Share</th><th>Conv. Lift</th><th></th></tr></thead>
+            <tbody id="snap-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty" id="snap-empty" style="display:none">No snapshots yet.</div>
+    </div>
+
+    <!-- ── BLOG POSTS ── -->
+    <div id="tab-posts" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Add / Edit Blog Post</div>
+        <div id="post-alert" style="display:none"></div>
+        <div class="grid2 mb14">
+          <div style="grid-column:1/-1"><label class="label">Post Title / URL</label><input type="text" class="input" id="fp-title" placeholder="e.g. /blog/hme-equipment-guide or 'HME Equipment Guide'"/></div>
+        </div>
+        <div class="grid4 mb20">
+          <div><label class="label">Entrances</label><input type="number" class="input" id="fp-entrances" placeholder="e.g. 820"/></div>
+          <div><label class="label">Engaged Sessions</label><input type="number" class="input" id="fp-engaged" placeholder="e.g. 610"/></div>
+          <div><label class="label">Total Sessions</label><input type="number" class="input" id="fp-sessions" placeholder="e.g. 740"/></div>
+          <div><label class="label">Assisted Conversions</label><input type="number" class="input" id="fp-assisted" placeholder="e.g. 18"/></div>
+          <div><label class="label">Blog→Intent Transitions</label><input type="number" class="input" id="fp-intent" placeholder="e.g. 95"/></div>
+        </div>
+        <div class="flex-gap">
+          <button class="btn-primary" id="save-post-btn" onclick="savePost()">Add Post</button>
+          <button class="btn-ghost" id="cancel-post-btn" style="display:none" onclick="cancelPostEdit()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card" id="posts-table-card" style="display:none">
+        <div class="card-title" id="posts-table-title">Blog Post Rankings</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Post</th><th>Value Score</th><th>Entrances</th><th>Eng. Rate</th><th>Assists</th><th>Intent Nav</th><th></th></tr></thead>
+            <tbody id="posts-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="empty" id="posts-empty" style="display:none">No posts yet. Add your first blog post above.</div>
+    </div>
+
+    <!-- ── TREND ── -->
+    <div id="tab-trend" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Blog Influence Score — Trend</div>
+        <div id="trend-canvas-wrap">
+          <canvas id="trend-canvas"></canvas>
+          <div class="trend-empty" id="trend-empty">Add at least 2 weekly snapshots to see trend.</div>
+        </div>
+      </div>
+      <div class="card" id="trend-table-card" style="display:none">
+        <div class="card-title">All Snapshots</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Label</th><th>BIS</th><th>Entry Share</th><th>Conv. Lift</th><th>BPPR</th><th>Gravity</th></tr></thead>
+            <tbody id="trend-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NARRATIVE ── -->
+    <div id="tab-narrative" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Strategic Narrative</div>
+        <p style="color:#7a94b8;font-size:14px;margin-bottom:20px;">Auto-generated client-ready summary based on your most recent snapshot. Copy and paste directly into reports or presentations.</p>
+        <div class="narrative-box" id="narrative-box">
+          <div class="narrative-title">BLOG PERFORMANCE SUMMARY</div>
+          <div class="narrative-text" id="narrative-text" style="color:#7a94b8;">Enter site data and save a snapshot to generate your narrative.</div>
+          <div class="narrative-disclaimer" id="narrative-disclaimer" style="display:none">
+            * Influenced conversion estimates are modeled projections based on traffic share and conversion lift data. They represent statistical attribution, not direct tracked conversions.
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;" id="narrative-actions" style="display:none">
+          <button class="btn-primary" onclick="copyNarrative()">Copy to Clipboard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GA4 GUIDE ── -->
+    <div id="tab-guide" class="tab-panel">
+      <div class="card">
+        <div class="card-title">How to Pull FLOW Data from GA4</div>
+        <p style="color:#7a94b8;font-size:15px;line-height:1.7;margin-bottom:16px;">FLOW requires more data points than most tools — but all of them live in GA4 or Google Search Console. This guide tells you exactly where each one is. The trickiest ones (blog segment, assisted conversions, intent page navigation) have detailed instructions below.</p>
+        <div style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:14px 18px;">
+          <div style="font-weight:700;color:#a78bfa;margin-bottom:6px;">💡 Key Setup: Blog Segment Filter</div>
+          <div style="color:#7a94b8;font-size:14px;line-height:1.6;">Almost every metric in FLOW requires filtering GA4 to pages containing <code style="color:#a78bfa">/blog/</code> in the URL. Before pulling any numbers, set up a saved comparison in GA4 that filters by Page path containing "/blog/". This saves you significant time every week.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g1')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#f0f5ff"></div><div class="guide-title">Total Sessions, Users &amp; Conversions</div><div class="guide-tag">Site-level baseline</div></div>
+          <div class="guide-chevron" id="g1-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g1">
+          <div class="guide-summary">The site-wide totals that FLOW uses as denominators. These are your baseline — everything blog-related gets compared against these numbers.</div>
+          <div class="guide-step-title">Where to find them:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Reports → Acquisition → Traffic Acquisition</strong></li>
+            <li>Set date range to your week</li>
+            <li><strong>Total Sessions</strong> — bottom row total of the Sessions column</li>
+            <li><strong>Total Users</strong> — same report, Users column total</li>
+            <li><strong>Total Conversions</strong> — go to <strong>Reports → Engagement → Conversions</strong>, select your key event, note the total count</li>
+          </ol>
+          <div class="gotcha"><div class="gotcha-title">⚠ Gotcha</div>Make sure you're using the same conversion event consistently every week. If you have multiple conversion events (form_submit, phone_call, etc.), either pick one primary event or sum them — but don't change which ones you include week to week.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g2')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#a78bfa"></div><div class="guide-title">Site Engagement Rate</div><div class="guide-tag">Site-level baseline</div></div>
+          <div class="guide-chevron" id="g2-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g2">
+          <div class="guide-summary">GA4's engagement rate — the percentage of sessions that lasted more than 10 seconds, had a conversion event, or had 2+ pageviews. This is your site-wide quality baseline.</div>
+          <div class="guide-step-title">Where to find it:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Reports → Acquisition → Traffic Acquisition</strong></li>
+            <li>Find the <strong>Engagement rate</strong> column (may need to add it via the column customization icon)</li>
+            <li>Look at the overall total row at the bottom — that's your site engagement rate</li>
+            <li>Enter as a decimal: 54% = <strong>0.54</strong></li>
+          </ol>
+          <div class="pro-tip"><div class="pro-tip-title">💡 Pro Tip</div>If you don't see Engagement rate as a column, click the pencil/customize icon in the top right of the report table and add it from the available metrics list.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g3')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#34d399"></div><div class="guide-title">Site Pages Per Session &amp; Intent Navigation Rate</div><div class="guide-tag">Site-level baseline</div></div>
+          <div class="guide-chevron" id="g3-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g3">
+          <div class="guide-summary">Pages per session measures browse depth. Intent navigation rate measures how often any session visits a high-value page (contact, services, pricing, etc.) — your site-wide baseline for funnel movement.</div>
+          <div class="guide-step-title">Pages per session:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Reports → Engagement → Pages and Screens</strong></li>
+            <li>Note total <strong>Views</strong> and divide by total <strong>Sessions</strong> from Traffic Acquisition</li>
+            <li>Example: 21,600 views ÷ 12,000 sessions = <strong>1.8</strong></li>
+          </ol>
+          <div class="guide-step-title" style="margin-top:14px;">Intent navigation rate:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Reports → Engagement → Pages and Screens</strong></li>
+            <li>Filter by page path containing your intent pages (/contact, /services, /pricing, etc.)</li>
+            <li>Sum the Sessions for all intent pages, divide by Total Sessions</li>
+            <li>Example: 960 intent page sessions ÷ 12,000 total sessions = <strong>0.08</strong></li>
+          </ol>
+          <div class="gotcha"><div class="gotcha-title">⚠ Gotcha</div>One user can visit multiple intent pages in one session — this will overcount. For a cleaner number, use Explorations in GA4 to count unique sessions that included at least one intent page visit.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g4')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#a78bfa"></div><div class="guide-title">Blog Sessions, Users, Entrances &amp; Engaged Sessions</div><div class="guide-tag">Blog segment</div></div>
+          <div class="guide-chevron" id="g4-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g4">
+          <div class="guide-summary">The core blog traffic metrics. All require filtering GA4 to pages containing /blog/ in the URL path.</div>
+          <div class="guide-step-title">Where to find them:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Reports → Engagement → Pages and Screens</strong></li>
+            <li>Click the <strong>filter icon</strong> → Add filter → Page path → contains → <strong>/blog/</strong></li>
+            <li><strong>Blog Sessions</strong> — Sessions column total with /blog/ filter active</li>
+            <li><strong>Blog Users</strong> — Active Users column total</li>
+            <li><strong>Blog Engaged Sessions</strong> — Engaged sessions column total (add column if needed)</li>
+            <li>For <strong>Blog Entrances</strong>: switch to <strong>Reports → Acquisition → Traffic Acquisition</strong> with the same /blog/ page filter and look at Sessions (first-touch entries)</li>
+          </ol>
+          <div class="pro-tip"><div class="pro-tip-title">💡 Pro Tip</div>Save this filtered view using the bookmark icon in GA4. Next week you just open the bookmark, change the date range, and read the numbers. Saves 5 minutes per report.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g5')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#fbbf24"></div><div class="guide-title">Blog Assisted Conversions</div><div class="guide-tag">Blog segment — advanced</div></div>
+          <div class="guide-chevron" id="g5-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g5">
+          <div class="guide-summary">Conversions where a blog page appeared somewhere in the user's journey — not necessarily the last touchpoint. This is the most powerful FLOW signal and the hardest to pull cleanly.</div>
+          <div class="guide-step-title">Method 1 — GA4 Explorations (most accurate):</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Explore → Blank exploration</strong></li>
+            <li>Add dimension: <strong>Page path</strong></li>
+            <li>Add metric: <strong>Conversions</strong></li>
+            <li>Add segment: <strong>Users who visited a page matching /blog/</strong></li>
+            <li>The total conversions shown = users who touched blog AND converted (at any point in their journey)</li>
+          </ol>
+          <div class="guide-step-title" style="margin-top:14px;">Method 2 — GA4 Advertising (if Google Ads connected):</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Advertising → Attribution → Conversion paths</strong></li>
+            <li>Filter paths containing /blog/ pages</li>
+            <li>Sum conversions on those paths</li>
+          </ol>
+          <div class="gotcha"><div class="gotcha-title">⚠ Gotcha</div>GA4's default attribution model is data-driven or last-click — it may not give blog credit even when it appeared in the path. Explorations gives you a truer picture of participation regardless of attribution model.</div>
+          <div class="pro-tip"><div class="pro-tip-title">💡 Pro Tip</div>If this is too complex initially, use blog direct conversions × 2.5 as a rough proxy for assisted conversions. It's not precise but it's directionally useful while you build the proper Exploration report.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g6')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#f87171"></div><div class="guide-title">Blog → Intent Page Sessions &amp; Conversions with Blog Touchpoint</div><div class="guide-tag">Path data — advanced</div></div>
+          <div class="guide-chevron" id="g6-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g6">
+          <div class="guide-summary">How many blog sessions moved to a high-intent page in the same session, and how many total conversions involved a blog touchpoint anywhere in the journey.</div>
+          <div class="guide-step-title">Blog → Intent page sessions:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Explore → Path exploration</strong></li>
+            <li>Set starting point: <strong>Page path contains /blog/</strong></li>
+            <li>Look at Step 2 — which pages do blog visitors go to next</li>
+            <li>Sum sessions that went to any of your intent pages (/contact, /services, /pricing, etc.)</li>
+          </ol>
+          <div class="guide-step-title" style="margin-top:14px;">Conversions with blog touchpoint:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Advertising → Attribution → Conversion paths</strong></li>
+            <li>Look for paths that include any /blog/ page</li>
+            <li>Count total conversions on those paths — this is your BPPR numerator</li>
+          </ol>
+          <div class="gotcha"><div class="gotcha-title">⚠ Gotcha</div>Path Exploration in GA4 is session-scoped by default. A user who reads a blog post on Monday and converts on Friday may not show as a connected path. Use the Explorations user segment method from the Assisted Conversions section for a more accurate cross-session view.</div>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-header" onclick="toggleGuide('g7')">
+          <div class="guide-title-row"><div class="guide-dot" style="background:#3da3f5"></div><div class="guide-title">Individual Blog Post Metrics</div><div class="guide-tag">Post-level data</div></div>
+          <div class="guide-chevron" id="g7-chevron">▼</div>
+        </div>
+        <div class="guide-body" id="g7">
+          <div class="guide-summary">Per-post data for the Blog Post Rankings. You don't need to pull all posts every week — update individual post data when running quarterly content audits or when a specific post is being evaluated.</div>
+          <div class="guide-step-title">Where to find post-level data:</div>
+          <ol class="guide-ol">
+            <li>Go to <strong>Reports → Engagement → Pages and Screens</strong></li>
+            <li>Filter: Page path contains /blog/</li>
+            <li>Each row = one blog post with its Sessions, Engaged sessions, and Views</li>
+            <li>For assisted conversions per post: use Explorations with Page path as dimension and filter to specific post URL</li>
+            <li>For intent transitions per post: use Path Exploration starting from the specific post URL</li>
+          </ol>
+          <div class="pro-tip"><div class="pro-tip-title">💡 Pro Tip</div>Focus post-level data entry on your top 10–15 posts by traffic first. The rankings will still be meaningful with partial data, and you can fill in the rest over time. Don't let perfect be the enemy of good.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CONFIG (hidden) ── -->
+    <div id="tab-config" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Model Weights</div>
+        <div class="section-label mb14">Blog Influence Score Weights (must sum to 100)</div>
+        <div class="grid3 mb20">
+          <div><label class="label">Engagement Quality %</label><input type="number" class="input" id="cfg-w-eng" value="25" oninput="updateWeightTotal()"/></div>
+          <div><label class="label">Depth Ratio %</label><input type="number" class="input" id="cfg-w-depth" value="20" oninput="updateWeightTotal()"/></div>
+          <div><label class="label">Entry Influence %</label><input type="number" class="input" id="cfg-w-entry" value="15" oninput="updateWeightTotal()"/></div>
+          <div><label class="label">Conversion Lift %</label><input type="number" class="input" id="cfg-w-lift" value="20" oninput="updateWeightTotal()"/></div>
+          <div><label class="label">Path Participation %</label><input type="number" class="input" id="cfg-w-path" value="10" oninput="updateWeightTotal()"/></div>
+          <div><label class="label">Content Gravity %</label><input type="number" class="input" id="cfg-w-gravity" value="10" oninput="updateWeightTotal()"/></div>
+        </div>
+        <div id="weight-total" class="mb20" style="font-family:monospace;font-size:13px;color:#7a94b8;">Total: 100 ✓</div>
+        <button class="btn-green" onclick="saveConfig()">Save Config</button>
+      </div>
+    </div>
+
+    <!-- ── CLIENTS ── -->
+    <div id="tab-clients" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Add New Client</div>
+        <div style="display:flex;gap:12px;align-items:flex-end;">
+          <div style="flex:1"><label class="label">Client Name</label><input type="text" class="input" id="new-client-name" placeholder="e.g. Metro Health Systems" onkeydown="if(event.key==='Enter') addClient()"/></div>
+          <button class="btn-primary" onclick="addClient()">Add Client</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Clients</div>
+        <div id="client-list"></div>
+      </div>
+    </div>
+
+
+    <!-- ── COMPARISON SCOREBOARD ── -->
+    <div id="tab-compare" class="tab-panel">
+      <div class="card">
+        <div class="card-title">Comparison Scoreboard</div>
+        <p style="color:#7a94b8;font-size:14px;margin-bottom:16px;">Define two date ranges to compare blog performance over time. The tool averages all snapshots that fall within each range.</p>
+        <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#7a94b8;">
+          <strong style="color:#fbbf24">⚠ Use consistent time spans across all three periods</strong> — comparing one month to one week will produce misleading results. Month-to-month or quarter-to-quarter comparisons work best.
+        </div>
+        <div class="grid2">
+          <div>
+            <div style="color:#a78bfa;font-family:monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">① Earlier Period</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div><label class="label">Start</label><input type="date" class="input" id="cmp-mid-start" oninput="renderComparison()"/></div>
+              <div><label class="label">End</label><input type="date" class="input" id="cmp-mid-end" oninput="renderComparison()"/></div>
+            </div>
+          </div>
+          <div>
+            <div style="color:#34d399;font-family:monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">② Current Period</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div><label class="label">Start</label><input type="date" class="input" id="cmp-cur-start" oninput="renderComparison()"/></div>
+              <div><label class="label">End</label><input type="date" class="input" id="cmp-cur-end" oninput="renderComparison()"/></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="compare-board" style="display:none">
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:12px;margin-bottom:8px;padding:0 4px;">
+          <div></div>
+          <div class="cmp-col-head" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);">
+            <div class="cmp-col-title" style="color:#a78bfa">EARLIER PERIOD</div>
+            <div class="cmp-col-sub" id="cmp-head-mid"></div>
+          </div>
+          <div class="cmp-col-head" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);">
+            <div class="cmp-col-title" style="color:#34d399">CURRENT PERIOD</div>
+            <div class="cmp-col-sub" id="cmp-head-current"></div>
+          </div>
+        </div>
+
+        <!-- Rows -->
+        <div id="cmp-rows"></div>
+
+        <!-- Narrative summary -->
+        <div class="card" style="margin-top:8px" id="cmp-story-card">
+          <div class="card-title">Client Story</div>
+          <div id="cmp-story" style="font-size:16px;line-height:2;color:#f0f5ff;"></div>
+          <button class="btn-primary" style="margin-top:16px" onclick="copyCmpStory()">Copy to Clipboard</button>
+        </div>
+      </div>
+
+      <div class="empty" id="compare-empty">Add at least 2 snapshots to use the comparison scoreboard.</div>
+    </div>
+
+  </div><!-- /app-body -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════
+// DEMO DATA
+// ═══════════════════════════════════════════
+const DEMO_ID = 'demo';
+const DEMO_SNAPS = [
+  { id:'s1', date:'2024-01-07', label:'Week 1', totalSessions:11200, totalUsers:9100, totalConv:360, siteEng:0.52, sitePPS:1.7, siteIntent:0.07,
+    blogSessions:4600, blogUsers:3800, blogEntrances:2700, blogEngaged:2900, blogPPS:2.2, blogConv:38, blogAssisted:95, blogIntent:740, blogTouch:98 },
+  { id:'s2', date:'2024-01-14', label:'Week 2', totalSessions:11800, totalUsers:9600, totalConv:380, siteEng:0.53, sitePPS:1.8, siteIntent:0.075,
+    blogSessions:4900, blogUsers:4100, blogEntrances:2900, blogEngaged:3100, blogPPS:2.3, blogConv:42, blogAssisted:102, blogIntent:800, blogTouch:105 },
+  { id:'s3', date:'2024-01-21', label:'Week 3', totalSessions:12000, totalUsers:9800, totalConv:400, siteEng:0.54, sitePPS:1.8, siteIntent:0.08,
+    blogSessions:5000, blogUsers:4200, blogEntrances:3000, blogEngaged:3200, blogPPS:2.4, blogConv:45, blogAssisted:110, blogIntent:850, blogTouch:110 },
+  { id:'s4', date:'2024-01-28', label:'Week 4', totalSessions:12400, totalUsers:10100, totalConv:415, siteEng:0.55, sitePPS:1.9, siteIntent:0.082,
+    blogSessions:5300, blogUsers:4400, blogEntrances:3200, blogEngaged:3400, blogPPS:2.5, blogConv:48, blogAssisted:118, blogIntent:910, blogTouch:116 },
+];
+const DEMO_POSTS = [
+  { id:'p1', title:'/blog/hme-equipment-guide', entrances:820, engaged:610, sessions:740, assisted:18, intent:95 },
+  { id:'p2', title:'/blog/insurance-coverage-tips', entrances:640, engaged:490, sessions:580, assisted:14, intent:72 },
+  { id:'p3', title:'/blog/mobility-scooter-comparison', entrances:510, engaged:380, sessions:460, assisted:11, intent:58 },
+  { id:'p4', title:'/blog/oxygen-therapy-home', entrances:420, engaged:310, sessions:385, assisted:9, intent:48 },
+  { id:'p5', title:'/blog/cpap-setup-guide', entrances:380, engaged:290, sessions:345, assisted:8, intent:41 },
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let state = { clients:[], activeClient:DEMO_ID, snaps:[], posts:[], editSnapId:null, editPostId:null };
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+const lsGet = k => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):null; } catch{return null;} };
+const lsSet = (k,v) => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+function loadClients(){ return lsGet('flow:clients')||[{id:DEMO_ID,name:'Demo Client'}]; }
+function saveClients(){ lsSet('flow:clients',state.clients); }
+function loadSnaps(id){ const s=lsGet(`flow:snaps:${id}`); if(s)return s; if(id===DEMO_ID)return JSON.parse(JSON.stringify(DEMO_SNAPS)); return []; }
+function saveSnaps(){ lsSet(`flow:snaps:${state.activeClient}`,state.snaps); }
+function loadPosts(id){ const s=lsGet(`flow:posts:${id}`); if(s)return s; if(id===DEMO_ID)return JSON.parse(JSON.stringify(DEMO_POSTS)); return []; }
+function savePosts(){ lsSet(`flow:posts:${state.activeClient}`,state.posts); }
+function loadConfig(){ return lsGet(`flow:config:${state.activeClient}`)||{wEng:25,wDepth:20,wEntry:15,wLift:20,wPath:10,wGravity:10}; }
+function saveConfig(){
+  const cfg={wEng:+document.getElementById('cfg-w-eng').value, wDepth:+document.getElementById('cfg-w-depth').value,
+    wEntry:+document.getElementById('cfg-w-entry').value, wLift:+document.getElementById('cfg-w-lift').value,
+    wPath:+document.getElementById('cfg-w-path').value, wGravity:+document.getElementById('cfg-w-gravity').value};
+  lsSet(`flow:config:${state.activeClient}`,cfg);
+  computeDashboard(); alert('Config saved.');
+}
+function applyConfig(cfg){
+  document.getElementById('cfg-w-eng').value=cfg.wEng;
+  document.getElementById('cfg-w-depth').value=cfg.wDepth;
+  document.getElementById('cfg-w-entry').value=cfg.wEntry;
+  document.getElementById('cfg-w-lift').value=cfg.wLift;
+  document.getElementById('cfg-w-path').value=cfg.wPath;
+  document.getElementById('cfg-w-gravity').value=cfg.wGravity;
+  updateWeightTotal();
+}
+function updateWeightTotal(){
+  const t=['cfg-w-eng','cfg-w-depth','cfg-w-entry','cfg-w-lift','cfg-w-path','cfg-w-gravity'].reduce((s,id)=>s+(+document.getElementById(id).value||0),0);
+  const el=document.getElementById('weight-total');
+  el.textContent=`Total: ${t} ${Math.abs(t-100)<0.01?'✓':'✗ — must equal 100'}`;
+  el.style.color=Math.abs(t-100)<0.01?'#34d399':'#f87171';
+}
+
+// ═══════════════════════════════════════════
+// MATH
+// ═══════════════════════════════════════════
+function norm(val, min=0.5, max=1.5){
+  if(val>=max) return 1;
+  if(val<=min) return 0;
+  return (val-min)/(max-min);
+}
+
+function computeMetrics(s){
+  const blogEngRate = s.blogEngaged / s.blogSessions;
+  const engQuality  = blogEngRate / s.siteEng;
+  const depthRatio  = s.blogPPS / s.sitePPS;
+  const entryShare  = s.blogEntrances / s.totalSessions;
+  const blogACR     = s.blogAssisted / s.blogUsers;
+  const siteCVR     = s.totalConv / s.totalUsers;
+  const convLift    = blogACR / siteCVR;
+  const bppr        = s.blogTouch / s.totalConv;
+  const blogTrafficShare = s.blogSessions / s.totalSessions;
+  const pathLift    = bppr / blogTrafficShare;
+  const gravityRate = s.blogIntent / s.blogSessions;
+  const gravityStrength = gravityRate / s.siteIntent;
+  const influencedConv = s.totalConv * entryShare * convLift;
+
+  const cfg = loadConfig();
+  const engN    = norm(engQuality,   0.5, 1.5);
+  const depthN  = norm(depthRatio,   0.5, 1.5);
+  const entryN  = Math.min(1, entryShare / 0.35);
+  const liftN   = norm(convLift,     0.5, 2.0);
+  const pathN   = norm(bppr,         0.05, 0.40);
+  const gravN   = norm(gravityStrength, 0.5, 2.5);
+
+  // Round to 4 decimal places at compute time so all displays are identical
+  const bis = Math.round((engN*cfg.wEng + depthN*cfg.wDepth + entryN*cfg.wEntry + liftN*cfg.wLift + pathN*cfg.wPath + gravN*cfg.wGravity) * 10) / 10;
+
+  return { blogEngRate, engQuality, depthRatio, entryShare, blogACR, siteCVR, convLift, bppr, blogTrafficShare, pathLift,
+           gravityRate, gravityStrength, influencedConv, bis,
+           engN, depthN, entryN, liftN, pathN, gravN };
+}
+
+function computePostScore(p){
+  const engRate = p.sessions>0 ? p.engaged/p.sessions : 0;
+  const allP = state.posts;
+  const maxEntr  = Math.max(...allP.map(x=>x.entrances),1);
+  const maxAssist= Math.max(...allP.map(x=>x.assisted),1);
+  const maxIntent= Math.max(...allP.map(x=>x.intent),1);
+  const tN = p.entrances/maxEntr;
+  const eN = Math.min(1, engRate/0.85);
+  const aN = p.assisted/maxAssist;
+  const iN = p.intent/maxIntent;
+  return tN*30 + eN*25 + aN*30 + iN*15;
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function computeDashboard(){
+  if(!state.snaps.length){ resetDashboard(); return; }
+  const sorted = [...state.snaps].sort((a,b)=>a.date.localeCompare(b.date));
+  const s = sorted[sorted.length-1];
+  const m = computeMetrics(s);
+
+  // Hero
+  const bisEl = document.getElementById('flow-value');
+  const badgeEl = document.getElementById('flow-badge');
+  bisEl.textContent = m.bis.toFixed(1);
+  if(m.bis>=70){ bisEl.style.color='#a78bfa'; badgeEl.textContent='▲ Strong Content Asset'; badgeEl.className='flow-badge badge-strong'; }
+  else if(m.bis>=45){ bisEl.style.color='#fbbf24'; badgeEl.textContent='→ Moderate Influence'; badgeEl.className='flow-badge badge-moderate'; }
+  else { bisEl.style.color='#f87171'; badgeEl.textContent='▼ Limited Impact'; badgeEl.className='flow-badge badge-weak'; }
+
+  // Signals
+  const signals = [
+    { label:'Engagement Quality', val:m.engQuality, norm:m.engN, color:'#a78bfa',
+      bl:`Blog eng. rate: ${(m.blogEngRate*100).toFixed(1)}% vs site: ${(s.siteEng*100).toFixed(1)}%`,
+      defense:'Blog engagement rate vs site average — measures content quality.' },
+    { label:'Depth Ratio', val:m.depthRatio, norm:m.depthN, color:'#34d399',
+      bl:`Blog: ${s.blogPPS.toFixed(1)} pages/session vs site: ${s.sitePPS.toFixed(1)}`,
+      defense:'Blog visitors explore deeper into the site than average.' },
+    { label:'Entry Influence', val:m.entryShare, norm:m.entryN, color:'#3da3f5', pct:true,
+      bl:`${(m.entryShare*100).toFixed(1)}% of all site sessions entered via blog`,
+      defense:'Share of total site sessions that began on a blog page.' },
+    { label:'Conversion Lift', val:m.convLift, norm:m.liftN, color:'#fbbf24',
+      bl:`Blog assist CVR: ${(m.blogACR*100).toFixed(2)}% vs site CVR: ${(m.siteCVR*100).toFixed(2)}%`,
+      defense:'Blog visitors convert at a higher rate than average site visitors.' },
+    { label:'Path Participation', val:m.bppr, norm:m.pathN, color:'#f87171', pct:true,
+      bl:`Blog appears in ${(m.bppr*100).toFixed(1)}% of all conversion journeys`,
+      defense:'How often blog content appears somewhere in the conversion path.' },
+    { label:'Content Gravity', val:m.gravityStrength, norm:m.gravN, color:'#fb923c',
+      bl:`${(m.gravityRate*100).toFixed(1)}% of blog sessions move to intent pages`,
+      defense:'Blog content actively pushes visitors toward high-intent pages.' },
+  ];
+
+  document.getElementById('signal-grid').innerHTML = signals.map(sig=>{
+    const pct = Math.min(100, sig.norm*100);
+    const cls = sig.norm>=0.66?'sig-up':sig.norm>=0.33?'sig-mid':'sig-down';
+    const display = sig.pct ? (sig.val*100).toFixed(1)+'%' : sig.val.toFixed(2)+'×';
+    return `<div class="signal-card">
+      <div class="signal-name"><div class="signal-dot" style="background:${sig.color}"></div>${sig.label}</div>
+      <div class="signal-index ${cls}">${display}</div>
+      <div class="sig-bar-bg"><div class="sig-bar" style="width:${pct}%;background:${sig.color}"></div></div>
+      <div class="sig-defense">${sig.bl}</div>
+      <div class="sig-defense" style="margin-top:3px;font-style:italic">${sig.defense}</div>
+    </div>`;
+  }).join('');
+
+  // Stat strip
+  document.getElementById('st-conv').textContent   = Math.round(m.influencedConv);
+  document.getElementById('st-entry').textContent  = (m.entryShare*100).toFixed(1)+'%';
+  document.getElementById('st-lift').textContent   = m.convLift.toFixed(2)+'×';
+  document.getElementById('st-bppr').textContent   = (m.bppr*100).toFixed(1)+'%';
+  document.getElementById('st-gravity').textContent= (m.gravityRate*100).toFixed(1)+'%';
+  document.getElementById('st-date').textContent = s.label||s.date;
+
+  // Insight
+  const ib = document.getElementById('insight-box');
+  ib.style.display='block';
+  ib.innerHTML=`<strong>Latest snapshot (${s.label||s.date}):</strong> Blog content drives <strong>${(m.entryShare*100).toFixed(0)}%</strong> of site discovery and participates in <strong>${(m.bppr*100).toFixed(0)}%</strong> of all conversions. Blog visitors convert <strong>${m.convLift.toFixed(1)}×</strong> more often than average. Estimated <strong>${Math.round(m.influencedConv)}</strong> conversions influenced by blog content.`;
+
+  renderNarrative(s, m, sorted);
+}
+
+function resetDashboard(){
+  document.getElementById('flow-value').textContent='—';
+  document.getElementById('flow-badge').textContent='';
+  document.getElementById('signal-grid').innerHTML='<div class="signal-card" style="color:#7a94b8;font-size:14px;grid-column:1/-1;padding:20px">Enter site data to compute Blog Influence Score.</div>';
+  ['st-conv','st-entry','st-lift','st-bppr','st-gravity','st-date'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('insight-box').style.display='none';
+}
+
+// ═══════════════════════════════════════════
+// NARRATIVE
+// ═══════════════════════════════════════════
+function renderNarrative(s, m, sorted){
+  const el = document.getElementById('narrative-text');
+  const disc = document.getElementById('narrative-disclaimer');
+  const acts = document.getElementById('narrative-actions');
+  el.innerHTML = `
+    Blog content drives <span>${(m.entryShare*100).toFixed(0)}%</span> of site discovery, accounting for approximately <span>${Math.round(s.blogEntrances).toLocaleString()}</span> site entry sessions during this period.<br><br>
+    Visitors who engage with blog content convert <span>${m.convLift.toFixed(1)}×</span> more often than the average site visitor, with a blog-assisted conversion rate of <span>${(m.blogACR*100).toFixed(2)}%</span> compared to the site-wide rate of <span>${(m.siteCVR*100).toFixed(2)}%</span>.<br><br>
+    Blog pages appear in <span>${(m.bppr*100).toFixed(1)}%</span> of all conversion journeys — <span>${(m.pathLift*100).toFixed(0)}%</span> more than traffic share alone would predict.<br><br>
+    Content contributes to approximately <span>${Math.round(m.influencedConv)}</span> of the site's <span>${s.totalConv}</span> conversions during this period.*<br><br>
+    <span>${(m.gravityRate*100).toFixed(0)}%</span> of blog sessions move directly to service, contact, or pricing pages — <span>${m.gravityStrength.toFixed(1)}×</span> the site baseline — indicating strong funnel influence.<br><br>
+    Blog engagement quality is <span>${m.engQuality.toFixed(2)}×</span> the site average, and blog visitors explore <span>${m.depthRatio.toFixed(2)}×</span> more pages per session than the typical visitor.<br><br>
+    <strong style="color:#f0f5ff">Overall Blog Influence Score: <span style="color:#a78bfa">${m.bis.toFixed(1)} / 100</span></strong>
+  `;
+  disc.style.display='block';
+  if(acts) acts.style.display='flex';
+}
+
+function copyNarrative(){
+  const text = document.getElementById('narrative-text').innerText;
+  navigator.clipboard.writeText(text).then(()=>alert('Copied to clipboard!')).catch(()=>alert('Copy failed — please select and copy manually.'));
+}
+
+// ═══════════════════════════════════════════
+// SNAPSHOTS
+// ═══════════════════════════════════════════
+function showAlert(containerId, type, text){
+  const el=document.getElementById(containerId);
+  el.className=`alert ${type}`; el.textContent=text; el.style.display='block';
+  if(type==='ok') setTimeout(()=>{el.style.display='none';},3000);
+}
+
+function saveSnapshot(){
+  const d = {
+    id: state.editSnapId||'sn_'+Date.now(),
+    date: document.getElementById('f-date').value,
+    label: document.getElementById('f-label').value||'',
+    totalSessions: +document.getElementById('f-total-sessions').value,
+    totalUsers:    +document.getElementById('f-total-users').value,
+    totalConv:     +document.getElementById('f-total-conv').value,
+    siteEng:       +document.getElementById('f-site-eng').value,
+    sitePPS:       +document.getElementById('f-site-pps').value,
+    siteIntent:    +document.getElementById('f-site-intent').value,
+    blogSessions:  +document.getElementById('f-blog-sessions').value,
+    blogUsers:     +document.getElementById('f-blog-users').value,
+    blogEntrances: +document.getElementById('f-blog-entrances').value,
+    blogEngaged:   +document.getElementById('f-blog-engaged').value,
+    blogPPS:       +document.getElementById('f-blog-pps').value,
+    blogConv:      +document.getElementById('f-blog-conv').value,
+    blogAssisted:  +document.getElementById('f-blog-assisted').value,
+    blogIntent:    +document.getElementById('f-blog-intent').value,
+    blogTouch:     +document.getElementById('f-blog-touch').value,
+  };
+  if(!d.date) return showAlert('data-alert','err','Date is required.');
+  if(!d.totalSessions||!d.blogSessions) return showAlert('data-alert','err','Total sessions and blog sessions are required.');
+  if(state.editSnapId){
+    state.snaps=state.snaps.map(s=>s.id===state.editSnapId?d:s);
+    showAlert('data-alert','ok','Snapshot updated.');
+  } else {
+    state.snaps=[...state.snaps,d].sort((a,b)=>a.date.localeCompare(b.date));
+    showAlert('data-alert','ok','Snapshot saved.');
+  }
+  saveSnaps(); clearSnapForm(); renderSnapTable(); computeDashboard(); renderTrend();
+}
+
+function clearSnapForm(){
+  ['f-date','f-label','f-total-sessions','f-total-users','f-total-conv','f-site-eng','f-site-pps','f-site-intent',
+   'f-blog-sessions','f-blog-users','f-blog-entrances','f-blog-engaged','f-blog-pps','f-blog-conv','f-blog-assisted','f-blog-intent','f-blog-touch']
+    .forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-date').value = todayStr();
+  state.editSnapId=null;
+  document.getElementById('save-snap-btn').textContent='Save Snapshot';
+  document.getElementById('cancel-snap-btn').style.display='none';
+}
+function cancelSnapEdit(){ clearSnapForm(); renderSnapTable(); }
+
+function editSnapshot(id){
+  const s=state.snaps.find(x=>x.id===id); if(!s)return;
+  state.editSnapId=id;
+  document.getElementById('f-date').value=s.date;
+  document.getElementById('f-label').value=s.label||'';
+  document.getElementById('f-total-sessions').value=s.totalSessions;
+  document.getElementById('f-total-users').value=s.totalUsers;
+  document.getElementById('f-total-conv').value=s.totalConv;
+  document.getElementById('f-site-eng').value=s.siteEng;
+  document.getElementById('f-site-pps').value=s.sitePPS;
+  document.getElementById('f-site-intent').value=s.siteIntent;
+  document.getElementById('f-blog-sessions').value=s.blogSessions;
+  document.getElementById('f-blog-users').value=s.blogUsers;
+  document.getElementById('f-blog-entrances').value=s.blogEntrances;
+  document.getElementById('f-blog-engaged').value=s.blogEngaged;
+  document.getElementById('f-blog-pps').value=s.blogPPS;
+  document.getElementById('f-blog-conv').value=s.blogConv;
+  document.getElementById('f-blog-assisted').value=s.blogAssisted;
+  document.getElementById('f-blog-intent').value=s.blogIntent;
+  document.getElementById('f-blog-touch').value=s.blogTouch;
+  document.getElementById('save-snap-btn').textContent='Update Snapshot';
+  document.getElementById('cancel-snap-btn').style.display='inline-block';
+  showTab('data', document.querySelector('.tab-btn:nth-child(2)'));
+}
+
+function deleteSnapshot(id){
+  state.snaps=state.snaps.filter(s=>s.id!==id);
+  if(state.editSnapId===id) clearSnapForm();
+  saveSnaps(); renderSnapTable(); computeDashboard(); renderTrend();
+}
+
+function renderSnapTable(){
+  const card=document.getElementById('snap-table-card');
+  const empty=document.getElementById('snap-empty');
+  if(!state.snaps.length){ card.style.display='none'; empty.style.display='block'; return; }
+  card.style.display='block'; empty.style.display='none';
+  document.getElementById('snap-table-title').textContent=`Saved Snapshots — ${state.snaps.length} weeks`;
+  document.getElementById('snap-tbody').innerHTML=[...state.snaps].reverse().map(s=>{
+    const m=computeMetrics(s);
+    return `<tr>
+      <td>${s.date}</td><td>${s.label||'—'}</td>
+      <td style="color:#a78bfa;font-weight:700">${m.bis.toFixed(1)}</td>
+      <td>${Math.round(m.influencedConv)}</td>
+      <td>${(m.entryShare*100).toFixed(1)}%</td>
+      <td>${m.convLift.toFixed(2)}×</td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn-ghost" style="padding:5px 11px;font-size:13px" onclick="editSnapshot('${s.id}')">✎</button>
+        <button class="btn-danger" onclick="deleteSnapshot('${s.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// BLOG POSTS
+// ═══════════════════════════════════════════
+function savePost(){
+  const d={
+    id: state.editPostId||'p_'+Date.now(),
+    title: document.getElementById('fp-title').value.trim(),
+    entrances: +document.getElementById('fp-entrances').value,
+    engaged:   +document.getElementById('fp-engaged').value,
+    sessions:  +document.getElementById('fp-sessions').value,
+    assisted:  +document.getElementById('fp-assisted').value,
+    intent:    +document.getElementById('fp-intent').value,
+  };
+  if(!d.title) return showAlert('post-alert','err','Post title or URL is required.');
+  if(!d.sessions) return showAlert('post-alert','err','Sessions is required.');
+  if(state.editPostId){
+    state.posts=state.posts.map(p=>p.id===state.editPostId?d:p);
+    showAlert('post-alert','ok','Post updated.');
+  } else {
+    state.posts=[...state.posts,d];
+    showAlert('post-alert','ok','Post added.');
+  }
+  savePosts(); clearPostForm(); renderPostsTable();
+}
+
+function clearPostForm(){
+  ['fp-title','fp-entrances','fp-engaged','fp-sessions','fp-assisted','fp-intent'].forEach(id=>document.getElementById(id).value='');
+  state.editPostId=null;
+  document.getElementById('save-post-btn').textContent='Add Post';
+  document.getElementById('cancel-post-btn').style.display='none';
+}
+function cancelPostEdit(){ clearPostForm(); renderPostsTable(); }
+
+function editPost(id){
+  const p=state.posts.find(x=>x.id===id); if(!p)return;
+  state.editPostId=id;
+  document.getElementById('fp-title').value=p.title;
+  document.getElementById('fp-entrances').value=p.entrances;
+  document.getElementById('fp-engaged').value=p.engaged;
+  document.getElementById('fp-sessions').value=p.sessions;
+  document.getElementById('fp-assisted').value=p.assisted;
+  document.getElementById('fp-intent').value=p.intent;
+  document.getElementById('save-post-btn').textContent='Update Post';
+  document.getElementById('cancel-post-btn').style.display='inline-block';
+}
+
+function deletePost(id){
+  state.posts=state.posts.filter(p=>p.id!==id);
+  if(state.editPostId===id) clearPostForm();
+  savePosts(); renderPostsTable();
+}
+
+function renderPostsTable(){
+  const card=document.getElementById('posts-table-card');
+  const empty=document.getElementById('posts-empty');
+  if(!state.posts.length){ card.style.display='none'; empty.style.display='block'; return; }
+  card.style.display='block'; empty.style.display='none';
+  const ranked=[...state.posts].map(p=>({...p,score:computePostScore(p)})).sort((a,b)=>b.score-a.score).slice(0,50);
+  const maxScore=ranked[0].score;
+  document.getElementById('posts-table-title').textContent=`Blog Post Rankings — ${ranked.length} posts`;
+  document.getElementById('posts-tbody').innerHTML=ranked.map((p,i)=>{
+    const engRate=p.sessions>0?p.engaged/p.sessions:0;
+    const pct=Math.min(100,(p.score/maxScore)*100);
+    return `<tr>
+      <td><div class="post-rank">${i+1}</div></td>
+      <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</td>
+      <td><div style="font-weight:700;color:#a78bfa">${p.score.toFixed(1)}</div><div class="post-bar-bg"><div class="post-bar" style="width:${pct}%"></div></div></td>
+      <td>${p.entrances.toLocaleString()}</td>
+      <td>${(engRate*100).toFixed(1)}%</td>
+      <td>${p.assisted}</td>
+      <td>${p.intent}</td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn-ghost" style="padding:5px 11px;font-size:13px" onclick="editPost('${p.id}')">✎</button>
+        <button class="btn-danger" onclick="deletePost('${p.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// TREND CHART
+// ═══════════════════════════════════════════
+function renderTrend(){
+  const sorted=[...state.snaps].sort((a,b)=>a.date.localeCompare(b.date));
+  const trendTable=document.getElementById('trend-table-card');
+  const empty=document.getElementById('trend-empty');
+  const canvas=document.getElementById('trend-canvas');
+
+  if(sorted.length<2){
+    empty.style.display='flex'; canvas.style.display='none'; trendTable.style.display='none'; return;
+  }
+  empty.style.display='none'; canvas.style.display='block'; trendTable.style.display='block';
+
+  const metrics=sorted.map(s=>({...s,...computeMetrics(s)}));
+  const labels=metrics.map(m=>m.label||m.date);
+  const scores=metrics.map(m=>m.bis);
+
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.parentElement.offsetWidth;
+  canvas.height=260;
+  const W=canvas.width, H=canvas.height;
+  const pad={t:30,r:30,b:50,l:60};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  const maxScore=Math.ceil(Math.max(...scores,60)/10)*10;
+  const minScore=Math.floor(Math.min(...scores,0)/10)*10;
+  const range=maxScore-minScore||10;
+  ctx.strokeStyle='rgba(30,53,88,0.8)'; ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const y=pad.t+cH*(1-i/5);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cW,y); ctx.stroke();
+    ctx.fillStyle='#7a94b8'; ctx.font='11px monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(minScore+range*i/5), pad.l-8, y+4);
+  }
+
+  // Line
+  const pts=scores.map((s,i)=>({ x:pad.l+(i/(scores.length-1))*cW, y:pad.t+cH*(1-(s-minScore)/range) }));
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
+  grad.addColorStop(0,'rgba(167,139,250,0.3)'); grad.addColorStop(1,'rgba(167,139,250,0)');
+  ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[pts.length-1].x,pad.t+cH); ctx.lineTo(pts[0].x,pad.t+cH); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.strokeStyle='#a78bfa'; ctx.lineWidth=2.5; ctx.stroke();
+  pts.forEach((p,i)=>{
+    ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2);
+    ctx.fillStyle='#a78bfa'; ctx.fill();
+    ctx.fillStyle='#f0f5ff'; ctx.font='bold 11px Barlow,Arial'; ctx.textAlign='center';
+    ctx.fillText(scores[i].toFixed(1),p.x,p.y-10);
+  });
+
+  // X labels
+  ctx.fillStyle='#7a94b8'; ctx.font='11px monospace'; ctx.textAlign='center';
+  labels.forEach((l,i)=>{ const x=pad.l+(i/(labels.length-1))*cW; ctx.fillText(l,x,H-10); });
+
+  // Trend table
+  trendTable.style.display='block';
+  document.getElementById('trend-tbody').innerHTML=metrics.map(m=>`<tr>
+    <td>${m.date}</td><td>${m.label||'—'}</td>
+    <td style="color:#a78bfa;font-weight:700">${m.bis.toFixed(1)}</td>
+    <td>${(m.entryShare*100).toFixed(1)}%</td>
+    <td>${m.convLift.toFixed(2)}×</td>
+    <td>${(m.bppr*100).toFixed(1)}%</td>
+    <td>${(m.gravityRate*100).toFixed(1)}%</td>
+  </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// CLIENTS
+// ═══════════════════════════════════════════
+function renderClientSelect(){
+  const sel=document.getElementById('client-select');
+  sel.innerHTML=state.clients.map(c=>`<option value="${c.id}" ${c.id===state.activeClient?'selected':''}>${c.name}</option>`).join('');
+}
+function renderClientList(){
+  document.getElementById('client-list').innerHTML=state.clients.map(c=>`
+    <div class="client-row ${c.id===state.activeClient?'active':''}">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="client-dot ${c.id===state.activeClient?'active':''}"></div>
+        <div style="font-size:17px;font-weight:600">${c.name}</div>
+        ${c.id===DEMO_ID?'<span style="font-family:monospace;font-size:11px;color:#7a94b8;border:1px solid #1e3558;border-radius:4px;padding:3px 8px">DEMO</span>':''}
+      </div>
+      <div style="display:flex;gap:8px">
+        ${c.id!==state.activeClient?`<button class="btn-ghost" onclick="switchClient('${c.id}')">Switch</button>`:''}
+        ${c.id!==DEMO_ID?`<button class="btn-danger" onclick="removeClient('${c.id}')">Remove</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function switchClient(id){
+  state.activeClient=id; state.snaps=loadSnaps(id); state.posts=loadPosts(id);
+  state.editSnapId=null; state.editPostId=null;
+  clearSnapForm(); applyConfig(loadConfig());
+  renderClientSelect(); renderClientList(); renderSnapTable(); renderPostsTable();
+  computeDashboard(); renderTrend(); populateCompareSelects();
+}
+function addClient(){
+  const input=document.getElementById('new-client-name');
+  const name=input.value.trim(); if(!name)return;
+  const id='client_'+Date.now();
+  state.clients.push({id,name}); saveClients(); input.value=''; switchClient(id);
+}
+function removeClient(id){
+  if(id===DEMO_ID)return;
+  state.clients=state.clients.filter(c=>c.id!==id); saveClients(); switchClient(DEMO_ID);
+}
+
+// ═══════════════════════════════════════════
+// TABS & GUIDE
+// ═══════════════════════════════════════════
+function showTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='trend') renderTrend(); if(name==='compare') populateCompareSelects();
+}
+function toggleGuide(id){
+  const body=document.getElementById(id);
+  const chev=document.getElementById(id+'-chevron');
+  body.classList.toggle('open'); chev.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const todayStr = ()=>new Date().toISOString().split('T')[0];
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+function init(){
+  state.clients=loadClients();
+  state.snaps=loadSnaps(DEMO_ID);
+  state.posts=loadPosts(DEMO_ID);
+  document.getElementById('f-date').value=todayStr();
+  applyConfig(loadConfig());
+  renderClientSelect(); renderClientList(); renderSnapTable(); renderPostsTable();
+  computeDashboard(); renderTrend(); populateCompareSelects();
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('admin')==='true') document.getElementById('config-tab-btn').style.display='inline-block';
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+
+// ═══════════════════════════════════════════
+// COMPARISON SCOREBOARD
+// ═══════════════════════════════════════════
+function populateCompareSelects(){
+  const snaps=[...state.snaps].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!snaps.length) return;
+  if(snaps.length>=2){
+    const mid=snaps[Math.floor(snaps.length/2)].date;
+    const last=snaps[snaps.length-1].date;
+    const midStart=snaps[0].date;
+    const midEnd=snaps[Math.floor(snaps.length/2)-1]?.date||mid;
+    if(!document.getElementById('cmp-mid-start').value) document.getElementById('cmp-mid-start').value=midStart;
+    if(!document.getElementById('cmp-mid-end').value)   document.getElementById('cmp-mid-end').value=midEnd;
+    if(!document.getElementById('cmp-cur-start').value) document.getElementById('cmp-cur-start').value=mid;
+    if(!document.getElementById('cmp-cur-end').value)   document.getElementById('cmp-cur-end').value=last;
+  }
+  renderComparison();
+}
+
+function avgSnaps(snaps){
+  if(!snaps.length) return null;
+  // Single snapshot: return exact values to avoid floating point drift
+  if(snaps.length===1) return {...snaps[0]};
+  const keys=['totalSessions','totalUsers','totalConv','siteEng','sitePPS','siteIntent',
+    'blogSessions','blogUsers','blogEntrances','blogEngaged','blogPPS','blogConv','blogAssisted','blogIntent','blogTouch'];
+  const avg={};
+  keys.forEach(k=>{ avg[k]=snaps.reduce((s,x)=>s+(+x[k]||0),0)/snaps.length; });
+  avg.date=snaps[0].date;
+  return avg;
+}
+
+function renderComparison(){
+  const board=document.getElementById('compare-board');
+  const empty=document.getElementById('compare-empty');
+  if(state.snaps.length<2){ board.style.display='none'; empty.style.display='block'; return; }
+
+  const midS=document.getElementById('cmp-mid-start').value;
+  const midE=document.getElementById('cmp-mid-end').value;
+  const curS=document.getElementById('cmp-cur-start').value;
+  const curE=document.getElementById('cmp-cur-end').value;
+
+  if(!midS||!midE||!curS||!curE){ board.style.display='none'; return; }
+
+  const inRange=(s,start,end)=>s.date>=start&&s.date<=end;
+  const midSnaps=state.snaps.filter(s=>inRange(s,midS,midE));
+  const curSnaps=state.snaps.filter(s=>inRange(s,curS,curE));
+
+  if(!midSnaps.length||!curSnaps.length){
+    board.style.display='none';
+    empty.style.display='block';
+    empty.textContent='No snapshots found in one or more date ranges. Adjust your dates.';
+    return;
+  }
+  empty.style.display='none';
+  board.style.display='block';
+
+  const mid=avgSnaps(midSnaps);
+  const cur=avgSnaps(curSnaps);
+  const mmid=computeMetrics(mid);
+  const mcur=computeMetrics(cur);
+
+  document.getElementById('cmp-head-mid').textContent=`${midS} – ${midE}`;
+  document.getElementById('cmp-head-current').textContent=`${curS} – ${curE}`;
+
+  function delta(newRaw, baseRaw, isGood=true){
+    if(!baseRaw||baseRaw===0) return '';
+    const pct=((newRaw-baseRaw)/baseRaw)*100;
+    const up=pct>0;
+    const cls=(up===isGood)?'delta-up':(Math.abs(pct)<1?'delta-flat':'delta-down');
+    const arrow=up?'▲':'▼';
+    return `<div class="cmp-delta ${cls}">${arrow} ${Math.abs(pct).toFixed(1)}% vs baseline</div>`;
+  }
+
+  function cell(displayVal, rawNew, rawBase, isGood=true, cls=''){
+    return `<div class="cmp-cell ${cls}"><div class="cmp-val">${displayVal}</div>${rawBase!==null&&rawBase!==undefined?delta(rawNew,rawBase,isGood):''}</div>`;
+  }
+
+  const fmtPct=v=>(v*100).toFixed(1)+'%';
+  const fmtX=v=>v.toFixed(2)+'×';
+  const fmtN=v=>Math.round(v).toLocaleString();
+  const fmtScore=v=>v.toFixed(1);
+
+  const rows = [
+    { section:'Overall Score' },
+    { label:'Blog Influence Score', midD:fmtScore(mmid.bis), curD:fmtScore(mcur.bis), midR:mmid.bis, curR:mcur.bis },
+
+    { section:'Discovery & Traffic' },
+    { label:'Blog Entry Share',            midD:fmtPct(mmid.entryShare),    curD:fmtPct(mcur.entryShare),    midR:mmid.entryShare,    curR:mcur.entryShare },
+    { label:'Blog Sessions',               midD:fmtN(mid.blogSessions),     curD:fmtN(cur.blogSessions),     midR:mid.blogSessions,   curR:cur.blogSessions },
+    { label:'Blog Entrances',              midD:fmtN(mid.blogEntrances),    curD:fmtN(cur.blogEntrances),    midR:mid.blogEntrances,  curR:cur.blogEntrances },
+    { label:'Total Site Sessions',         midD:fmtN(mid.totalSessions),    curD:fmtN(cur.totalSessions),    midR:mid.totalSessions,  curR:cur.totalSessions },
+
+    { section:'Engagement Quality' },
+    { label:'Engagement Quality Index',    midD:fmtX(mmid.engQuality),      curD:fmtX(mcur.engQuality),      midR:mmid.engQuality,    curR:mcur.engQuality },
+    { label:'Depth Ratio',                 midD:fmtX(mmid.depthRatio),      curD:fmtX(mcur.depthRatio),      midR:mmid.depthRatio,    curR:mcur.depthRatio },
+
+    { section:'Conversion Impact' },
+    { label:'Total Site Conversions',      midD:fmtN(mid.totalConv),        curD:fmtN(cur.totalConv),        midR:mid.totalConv,      curR:cur.totalConv },
+    { label:'Conversion Lift',             midD:fmtX(mmid.convLift),        curD:fmtX(mcur.convLift),        midR:mmid.convLift,      curR:mcur.convLift },
+    { label:'Est. Influenced Conversions', midD:fmtN(mmid.influencedConv),  curD:fmtN(mcur.influencedConv),  midR:mmid.influencedConv,curR:mcur.influencedConv },
+    { label:'Blog Path Participation',     midD:fmtPct(mmid.bppr),          curD:fmtPct(mcur.bppr),          midR:mmid.bppr,          curR:mcur.bppr },
+
+    { section:'Funnel Movement' },
+    { label:'Content Gravity Rate',        midD:fmtPct(mmid.gravityRate),   curD:fmtPct(mcur.gravityRate),   midR:mmid.gravityRate,   curR:mcur.gravityRate },
+    { label:'Gravity Strength',            midD:fmtX(mmid.gravityStrength), curD:fmtX(mcur.gravityStrength), midR:mmid.gravityStrength,curR:mcur.gravityStrength },
+    { label:'Path Participation Lift',     midD:fmtX(mmid.pathLift),        curD:fmtX(mcur.pathLift),        midR:mmid.pathLift,      curR:mcur.pathLift },
+  ];
+
+  document.getElementById('cmp-rows').innerHTML = rows.map(r=>{
+    if(r.section) return `<div class="cmp-row"><div class="cmp-section-header">${r.section}</div></div>`;
+    return `<div class="cmp-row">
+      <div class="cmp-metric-label">${r.label}</div>
+      ${cell(r.midD, r.midR, null, true, 'mid')}
+      ${cell(r.curD, r.curR, r.midR, true, 'current')}
+    </div>`;
+  }).join('');
+
+  // Story
+  const bisGain=mcur.bis-mmid.bis;
+  const convGain=mcur.influencedConv-mmid.influencedConv;
+  const liftGain=mmid.convLift>0?((mcur.convLift-mmid.convLift)/mmid.convLift*100):0;
+  const entryGain=mmid.entryShare>0?((mcur.entryShare-mmid.entryShare)/mmid.entryShare*100):0;
+  const sessionGain=mid.totalSessions>0?((cur.totalSessions-mid.totalSessions)/mid.totalSessions*100):0;
+  const convTotalGain=mid.totalConv>0?((cur.totalConv-mid.totalConv)/mid.totalConv*100):0;
+  document.getElementById('cmp-story').innerHTML = `
+    Comparing the earlier period (<strong>${midS} – ${midE}</strong>) to the current period (<strong>${curS} – ${curE}</strong>), blog content is delivering measurably stronger results.<br><br>
+    Total site sessions are <strong>${sessionGain>=0?'up':'down'} ${Math.abs(sessionGain).toFixed(0)}%</strong> and total conversions are <strong>${convTotalGain>=0?'up':'down'} ${Math.abs(convTotalGain).toFixed(0)}%</strong> period over period.<br><br>
+    Blog-driven site discovery is <strong>${entryGain>=0?'up':'down'} ${Math.abs(entryGain).toFixed(0)}%</strong> — blog pages now account for <strong>${fmtPct(mcur.entryShare)}</strong> of all site entry sessions, compared to <strong>${fmtPct(mmid.entryShare)}</strong> in the earlier period.<br><br>
+    Visitors who engage with blog content now convert <strong>${fmtX(mcur.convLift)}</strong> more often than the average site visitor, ${liftGain>=0?'up':'down'} from <strong>${fmtX(mmid.convLift)}</strong> — a <strong>${Math.abs(liftGain).toFixed(0)}% ${liftGain>=0?'improvement':'decline'}</strong> in conversion lift.<br><br>
+    The Blog Influence Score has moved from <strong>${fmtScore(mmid.bis)}</strong> to <strong>${fmtScore(mcur.bis)}</strong> — a ${bisGain>=0?'gain':'loss'} of <strong>${bisGain>=0?'+':''}${bisGain.toFixed(1)} points</strong>.<br><br>
+    Blog content is estimated to have influenced approximately <strong>${fmtN(mcur.influencedConv)} conversions</strong> in the current period, compared to <strong>${fmtN(mmid.influencedConv)}</strong> in the earlier period — ${convGain>=0?'an increase':'a decrease'} of roughly <strong>${convGain>=0?'+':''}${fmtN(convGain)} influenced conversions</strong>.*<br><br>
+    <em style="color:#7a94b8;font-size:13px">* Influenced conversion estimates are modeled projections based on traffic share and conversion lift. They represent statistical attribution, not directly tracked conversions.</em>
+  `;
+}
+
+function copyCmpStory(){
+  const text=document.getElementById('cmp-story').innerText;
+  navigator.clipboard.writeText(text).then(()=>alert('Copied!')).catch(()=>alert('Copy failed — select and copy manually.'));
+}
+
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
