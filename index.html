@@ -309,7 +309,7 @@
           <div><label class="label">Total Conversions</label><input type="number" class="input" id="f-total-conv" placeholder="e.g. 400"/></div>
           <div><label class="label">Site Engagement Rate (0–1)</label><input type="number" class="input" id="f-site-eng" placeholder="e.g. 0.54" step="0.01"/></div>
           <div><label class="label">Site Pages / Session</label><input type="number" class="input" id="f-site-pps" placeholder="e.g. 1.8" step="0.1"/></div>
-          <div><label class="label">Site Intent Nav Rate (0–1)</label><input type="number" class="input" id="f-site-intent" placeholder="e.g. 0.08" step="0.01"/></div>
+          <div><label class="label">Organic Sessions</label><input type="number" class="input" id="f-site-intent" placeholder="e.g. 4800"/></div>
         </div>
 
         <div class="section-label mb14">Blog Segment Metrics (pages containing /blog/)</div>
@@ -469,25 +469,25 @@
 
       <div class="guide-card">
         <div class="guide-header" onclick="toggleGuide('g3')">
-          <div class="guide-title-row"><div class="guide-dot" style="background:#34d399"></div><div class="guide-title">Site Pages Per Session &amp; Intent Navigation Rate</div><div class="guide-tag">Site-level baseline</div></div>
+          <div class="guide-title-row"><div class="guide-dot" style="background:#34d399"></div><div class="guide-title">Site Pages Per Session &amp; Organic Sessions</div><div class="guide-tag">Site-level baseline</div></div>
           <div class="guide-chevron" id="g3-chevron">▼</div>
         </div>
         <div class="guide-body" id="g3">
-          <div class="guide-summary">Pages per session measures browse depth. Intent navigation rate measures how often any session visits a high-value page (contact, services, pricing, etc.) — your site-wide baseline for funnel movement.</div>
+          <div class="guide-summary">Pages per session measures browse depth. Organic Sessions is the count of sessions that arrived via organic search — used to calculate your site's organic reach rate as a baseline for content gravity.</div>
           <div class="guide-step-title">Pages per session:</div>
           <ol class="guide-ol">
             <li>Go to <strong>Reports → Engagement → Pages and Screens</strong></li>
             <li>Note total <strong>Views</strong> and divide by total <strong>Sessions</strong> from Traffic Acquisition</li>
             <li>Example: 21,600 views ÷ 12,000 sessions = <strong>1.8</strong></li>
           </ol>
-          <div class="guide-step-title" style="margin-top:14px;">Intent navigation rate:</div>
+          <div class="guide-step-title" style="margin-top:14px;">Organic Sessions:</div>
           <ol class="guide-ol">
-            <li>Go to <strong>Reports → Engagement → Pages and Screens</strong></li>
-            <li>Filter by page path containing your intent pages (/contact, /services, /pricing, etc.)</li>
-            <li>Sum the Sessions for all intent pages, divide by Total Sessions</li>
-            <li>Example: 960 intent page sessions ÷ 12,000 total sessions = <strong>0.08</strong></li>
+            <li>Go to <strong>Reports → Acquisition → Traffic Acquisition</strong></li>
+            <li>Find the row for <strong>Organic Search</strong></li>
+            <li>Copy the <strong>Sessions</strong> number directly — that's it</li>
+            <li>Example: <strong>4,800</strong> organic sessions</li>
           </ol>
-          <div class="gotcha"><div class="gotcha-title">⚠ Gotcha</div>One user can visit multiple intent pages in one session — this will overcount. For a cleaner number, use Explorations in GA4 to count unique sessions that included at least one intent page visit.</div>
+          <div class="gotcha"><div class="gotcha-title">💡 Tip</div>The tool converts this to a rate automatically — just enter the raw session count.</div>
         </div>
       </div>
 
@@ -679,13 +679,13 @@
 // ═══════════════════════════════════════════
 const DEMO_ID = 'demo';
 const DEMO_SNAPS = [
-  { id:'s1', date:'2024-01-07', label:'Week 1', totalSessions:11200, totalUsers:9100, totalConv:360, siteEng:0.52, sitePPS:1.7, siteIntent:0.07,
+  { id:'s1', date:'2024-01-07', label:'Week 1', totalSessions:11200, totalUsers:9100, totalConv:360, siteEng:0.52, sitePPS:1.7, siteIntent:784,
     blogSessions:4600, blogUsers:3800, blogEntrances:2700, blogEngaged:2900, blogPPS:2.2, blogConv:38, blogAssisted:95, blogIntent:740, blogTouch:98 },
-  { id:'s2', date:'2024-01-14', label:'Week 2', totalSessions:11800, totalUsers:9600, totalConv:380, siteEng:0.53, sitePPS:1.8, siteIntent:0.075,
+  { id:'s2', date:'2024-01-14', label:'Week 2', totalSessions:11800, totalUsers:9600, totalConv:380, siteEng:0.53, sitePPS:1.8, siteIntent:885,
     blogSessions:4900, blogUsers:4100, blogEntrances:2900, blogEngaged:3100, blogPPS:2.3, blogConv:42, blogAssisted:102, blogIntent:800, blogTouch:105 },
-  { id:'s3', date:'2024-01-21', label:'Week 3', totalSessions:12000, totalUsers:9800, totalConv:400, siteEng:0.54, sitePPS:1.8, siteIntent:0.08,
+  { id:'s3', date:'2024-01-21', label:'Week 3', totalSessions:12000, totalUsers:9800, totalConv:400, siteEng:0.54, sitePPS:1.8, siteIntent:960,
     blogSessions:5000, blogUsers:4200, blogEntrances:3000, blogEngaged:3200, blogPPS:2.4, blogConv:45, blogAssisted:110, blogIntent:850, blogTouch:110 },
-  { id:'s4', date:'2024-01-28', label:'Week 4', totalSessions:12400, totalUsers:10100, totalConv:415, siteEng:0.55, sitePPS:1.9, siteIntent:0.082,
+  { id:'s4', date:'2024-01-28', label:'Week 4', totalSessions:12400, totalUsers:10100, totalConv:415, siteEng:0.55, sitePPS:1.9, siteIntent:1017,
     blogSessions:5300, blogUsers:4400, blogEntrances:3200, blogEngaged:3400, blogPPS:2.5, blogConv:48, blogAssisted:118, blogIntent:910, blogTouch:116 },
 ];
 const DEMO_POSTS = [
@@ -757,7 +757,8 @@ function computeMetrics(s){
   const blogTrafficShare = s.blogSessions / s.totalSessions;
   const pathLift    = bppr / blogTrafficShare;
   const gravityRate = s.blogIntent / s.blogSessions;
-  const gravityStrength = gravityRate / s.siteIntent;
+  const organicRate = s.totalSessions > 0 ? s.siteIntent / s.totalSessions : 0;
+  const gravityStrength = organicRate > 0 ? gravityRate / organicRate : 0;
   const influencedConv = s.totalConv * entryShare * convLift;
 
   const cfg = loadConfig();
